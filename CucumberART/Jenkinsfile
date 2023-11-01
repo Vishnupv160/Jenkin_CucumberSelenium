@@ -1,25 +1,19 @@
 pipeline {
     agent any
- 
+
     stages {
-        stage('Test') {
+        stage('Checkout') {
             steps {
-                bat "mvn -D clean test"
+                // This step checks out your source code from your version control system
+                checkout scm
             }
- 
-            post {                
-                // If Maven was able to run the tests, even if some of the test
-                // failed, record the test results and archive the jar file.
-                success {
-                   publishHTML([
-                       allowMissing: false, 
-                       alwaysLinkToLastBuild: false, 
-                       keepAll: false, 
-                       reportDir: 'target/surefire-reports/', 
-                       reportFiles: 'emailable-report.html', 
-                       reportName: 'HTML Report', 
-                       reportTitles: '', 
-                       useWrapperFileDirectly: true])
+        }
+
+        stage('Build and Run Tests') {
+            steps {
+                script {
+                    // Assuming you have Maven installed on your Jenkins agent
+                    sh 'mvn clean test'
                 }
             }
         }
